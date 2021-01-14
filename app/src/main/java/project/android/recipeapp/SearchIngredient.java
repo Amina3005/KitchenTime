@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
@@ -43,11 +42,11 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
     private ChipGroup chipGroup;
     private Button searchBtn;
     private AutoCompleteTextView inputEditText;
-    private List<Ingredient> ingredientList = new ArrayList<>();
-    private RecyclerView recyclerView;
+    private List<String> ingredientList = new ArrayList<>();
+    //private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
 
-    ArrayAdapter<Ingredient> arrayAdapter;
+    ArrayAdapter<String> arrayAdapter;
 
 
     @Nullable
@@ -58,36 +57,47 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
         toolbar = view.findViewById(R.id.toolbar_search);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
 
-        recyclerView = view.findViewById(R.id.recycler_search_view);
-        layoutManager = new LinearLayoutManager(getActivity());
+        //recyclerView = view.findViewById(R.id.recycler_search_view);
+        //layoutManager = new LinearLayoutManager(getActivity());
 
-        IngredientAdapter ad = new IngredientAdapter(getActivity(),ingredientList);
-        recyclerView.setAdapter(ad);
-        recyclerView.setLayoutManager(layoutManager);
+        //IngredientAdapter ad = new IngredientAdapter(getActivity(),ingredientList);
+        //recyclerView.setAdapter(ad);
+        //recyclerView.setLayoutManager(layoutManager);
 
         chipGroup = view.findViewById(R.id.chip_group);
         searchBtn = view.findViewById(R.id.ingredient_search_btn);
         inputEditText = view.findViewById(R.id.text_input_et);
 
 
-        arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line,ingredientList);
-        inputEditText.setAdapter(arrayAdapter);
-        inputEditText.setThreshold(1);
+
+
+
+
+        inputEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Ingredient selected = (Ingredient) adapterView.getItemAtPosition(i);
+                onItemSelected(selected);
+            }
+        });
+
+
         inputEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String input = inputEditText.getText().toString();
                 if (!input.equals("")) {
                     searchByIngredients(input);
-                    SearchAdapterIngredient adapter = new SearchAdapterIngredient(getActivity(), ingredientList);
+                    //SearchAdapterIngredient adapter = new SearchAdapterIngredient(getActivity(), ingredientList);
                     inputEditText.setAdapter(arrayAdapter);
-                    recyclerView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
-
+                    //recyclerView.setAdapter(adapter);
+                    //adapter.notifyDataSetChanged();
                 } else
                     Toast.makeText(getActivity(), "Select ingredients", Toast.LENGTH_LONG).show();
             }
         });
+
+
 
         /*
         inputEditText.addTextChangedListener(new TextWatcher() {
@@ -117,14 +127,6 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
         });
 
          */
-
-        inputEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Ingredient selected = (Ingredient) adapterView.getItemAtPosition(i);
-                onItemSelected(selected);
-            }
-        });
 
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
@@ -159,13 +161,15 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
                             Log.i("the load inrg error is:", String.valueOf(ingrArr));
                             for (int i = 0; i < ingrArr.length(); i++) {
                                 JSONObject jsonObject = ingrArr.getJSONObject(i);
-                                ingredientList.add(new Ingredient(jsonObject.getString("name"),
-                                        jsonObject.optString("image")));
+                                ingredientList.add(jsonObject.getString("name"));
+                                        //(new Ingredient(jsonObject.getString("name"),jsonObject.optString("image")));
                             }
-                            arrayAdapter.addAll(ingredientList);
-                            SearchAdapterIngredient adapter = new SearchAdapterIngredient(getActivity(),ingredientList);
-                            recyclerView.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
+
+                            arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line,ingredientList);
+                            inputEditText.setAdapter(arrayAdapter);
+                            inputEditText.setThreshold(1);
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
