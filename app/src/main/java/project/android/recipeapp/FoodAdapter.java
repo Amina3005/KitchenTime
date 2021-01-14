@@ -60,7 +60,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         Glide.with(holder.imageView.getContext()).load(current.getImage())
                 .placeholder(R.drawable.ic_baseline_image_not_supported_24).into(holder.imageView);
         holder.nameView.setText(current.getName());
-        holder.itemView.setOnClickListener(view -> {
+        holder.itemView.setOnClickListener((View view) -> {
             Intent intent = new Intent(view.getContext(), FoodActivity.class);
             intent.putExtra("id", current.getId());
             intent.putExtra("Image", current.getImage());

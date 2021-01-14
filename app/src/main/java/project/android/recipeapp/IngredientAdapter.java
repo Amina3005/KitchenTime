@@ -5,10 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -25,13 +25,13 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     public static class IngredientViewHolder extends RecyclerView.ViewHolder {
         ImageView ingred_image;
         TextView ingredients;
-        //CardView cardOfIngred;
+        LinearLayout rootView;
 
         IngredientViewHolder(View view) {
             super(view);
             ingred_image = view.findViewById(R.id.img_ingr);
             ingredients = view.findViewById(R.id.txt_name_ingr);
-            //cardOfIngred = view.findViewById(R.id.card_of_ingred);
+            rootView = view.findViewById(R.id.root_linear);
 
         }
 
@@ -54,6 +54,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         holder.ingredients.setText(data.get(position).getNam());
         Glide.with(holder.ingred_image.getContext()).load(data.get(position).getThumbnail()).into(holder.ingred_image);
+
     }
 
     @Override
