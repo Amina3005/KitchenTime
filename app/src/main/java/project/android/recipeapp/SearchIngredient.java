@@ -2,6 +2,8 @@ package project.android.recipeapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,7 +89,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
             public void onClick(View view) {
                 String input = inputEditText.getText().toString();
                 if (!input.equals("")) {
-                    searchByIngredients(input);
+                    loadSuggestions(input);
                     //SearchAdapterIngredient adapter = new SearchAdapterIngredient(getActivity(), ingredientList);
                     inputEditText.setAdapter(arrayAdapter);
                     //recyclerView.setAdapter(adapter);
@@ -99,7 +101,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
 
 
 
-        /*
+
         inputEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -108,16 +110,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String input = inputEditText.getText().toString();
-                if (!input.equals("")) {
-                    searchByIngredients(input);
-                    SearchAdapterIngredient adapter = new SearchAdapterIngredient(getActivity(), ingredientList);
-                    inputEditText.setAdapter(arrayAdapter);
-                    recyclerView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
-
-                } else
-                    Toast.makeText(getActivity(), "Select ingredients", Toast.LENGTH_LONG).show();
+                loadSuggestions(charSequence.toString());
             }
 
             @Override
@@ -126,7 +119,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
             }
         });
 
-         */
+
 
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
@@ -147,7 +140,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
     }
 
 
-    public void searchByIngredients(String query) {
+    public void loadSuggestions(String query) {
         String url = "https://api.spoonacular.com/food/ingredients/autocomplete?query=" + query + "&number=5&apiKey=0b04dac1a42848bfa0e68732c13df794";
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET,
