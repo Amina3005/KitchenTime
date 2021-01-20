@@ -74,6 +74,15 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
         searchImg.setOnClickListener(this);
 
+
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         searchEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -97,7 +106,29 @@ public class MainFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-        return view;
+
+
+
+    }
+
+
+
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("title",searchEt.getText().toString());
+    }
+
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState != null) {
+            String a = savedInstanceState.getString("title");
+            searchEt.setText(a);
+        }
     }
 
     public void searchRecipe (String query) {

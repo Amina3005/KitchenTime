@@ -1,6 +1,5 @@
 package project.android.recipeapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,15 +11,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -45,10 +44,11 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
     private Button searchBtn;
     private AutoCompleteTextView inputEditText;
     private List<String> ingredientList = new ArrayList<>();
-    //private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
+
 
     ArrayAdapter<String> arrayAdapter;
+
+
 
 
     @Nullable
@@ -59,53 +59,30 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
         toolbar = view.findViewById(R.id.toolbar_search);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
 
-        //recyclerView = view.findViewById(R.id.recycler_search_view);
-        //layoutManager = new LinearLayoutManager(getActivity());
-
-        //IngredientAdapter ad = new IngredientAdapter(getActivity(),ingredientList);
-        //recyclerView.setAdapter(ad);
-        //recyclerView.setLayoutManager(layoutManager);
 
         chipGroup = view.findViewById(R.id.chip_group);
         searchBtn = view.findViewById(R.id.ingredient_search_btn);
         inputEditText = view.findViewById(R.id.text_input_et);
 
-
-
-
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
+        rv = view.findViewById(R.id.recycler_search_results);
+        rv.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
         inputEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Ingredient selected = (Ingredient) adapterView.getItemAtPosition(i);
+                String selected = (String) adapterView.getItemAtPosition(i);
                 onItemSelected(selected);
+                inputEditText.setText("");
             }
         });
-
-
-        inputEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String input = inputEditText.getText().toString();
-                if (!input.equals("")) {
-                    loadSuggestions(input);
-                    //SearchAdapterIngredient adapter = new SearchAdapterIngredient(getActivity(), ingredientList);
-                    inputEditText.setAdapter(arrayAdapter);
-                    //recyclerView.setAdapter(adapter);
-                    //adapter.notifyDataSetChanged();
-                } else
-                    Toast.makeText(getActivity(), "Select ingredients", Toast.LENGTH_LONG).show();
-            }
-        });
-
-
 
 
         inputEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                inputEditText.setEnabled(true);
+
             }
 
             @Override
@@ -115,24 +92,17 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
 
             @Override
             public void afterTextChanged(Editable editable) {
-                inputEditText.setEnabled(true);
+
             }
         });
-
 
 
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<String> tmp = SearchAdapterIngredient.ingredients;
-                if(tmp.isEmpty()){
-                    Toast.makeText(getActivity(), "You must select at least one ingredient", Toast.LENGTH_LONG).show();
-                }
-                else{
-                    Intent searchResultsIntent = new Intent(getActivity(), SearchResultActivity.class);
-                    startActivity(searchResultsIntent);
-                }
+                String sea = getSelectedChips(chipGroup);
+                getResults(sea);
             }
         });
 
@@ -152,6 +122,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
                         try {
                             JSONArray ingrArr = response;
                             Log.i("the load inrg error is:", String.valueOf(ingrArr));
+                            ingredientList.clear();
                             for (int i = 0; i < ingrArr.length(); i++) {
                                 JSONObject jsonObject = ingrArr.getJSONObject(i);
                                 ingredientList.add(jsonObject.getString("name"));
@@ -177,10 +148,10 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void onItemSelected (Ingredient ingredient) {
+    public void onItemSelected (String s) {
         Chip chip = new Chip(getActivity());
-        chip.setText(ingredient.getNam());
-        chip.setChipIcon(ContextCompat.getDrawable(getActivity(), Integer.parseInt(ingredient.getThumbnail())));
+        chip.setText(s);
+        //chip.setChipIcon(ContextCompat.getDrawable(getActivity(), Integer.parseInt(ingredient.getThumbnail())));
         chip.setCloseIconVisible(true);
         chip.setCheckable(false);
         chip.setClickable(false);
@@ -195,4 +166,60 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
         Chip chip = (Chip) view;
         chipGroup.removeView(chip);
     }
+
+
+
+
+    private RecyclerView rv;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private List<Food> foodList = new ArrayList<>();
+    private JSONArray array;
+
+    public void getResults(String ingredients) {
+        swipeRefreshLayout.setRefreshing(true);
+        String url = "https://api.spoonacular.com/recipes/findByIngredients?ingredients=" + ingredients + "&number=5&apiKey=0b04dac1a42848bfa0e68732c13df794";
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    array = response;
+                    Log.i("the res loas is: ", String.valueOf(array));
+                    foodList.clear();
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject jsonObject = array.getJSONObject(i);
+                        foodList.add(new Food(jsonObject.getInt("id"),
+                                jsonObject.optString("image"), jsonObject.getString("title")));
+                    }
+                    swipeRefreshLayout.setRefreshing(false);
+                    FoodAdapter adapter = new FoodAdapter();
+                    adapter.setMyFoodList(foodList);
+                    rv.setAdapter(adapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("the res error is:", error.toString());
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
+    }
+
+
+    public String getSelectedChips (ChipGroup c) {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < chipGroup.getChildCount(); i++) {
+            Chip ch = (Chip) chipGroup.getChildAt(i);
+            String s = ch.getText().toString();
+            res.append(" , ").append(s);
+
+        }
+        return res.toString();
+    }
+
+
+
 }

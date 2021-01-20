@@ -13,8 +13,7 @@
         android:id="@+id/circle_image"
         android:layout_width="50dp"
         android:layout_height="60dp"
-        android:layout_marginLeft="5dp"
-        android:src="@drawable/pasta"/>
+        android:layout_marginLeft="5dp" />
 
     <TextView
         android:id="@+id/title_ingr"
