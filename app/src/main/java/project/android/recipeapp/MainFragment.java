@@ -48,6 +48,9 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     public List<Food> searchList;
     private EditText searchEt;
 
+    String s;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,31 +60,27 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
         recyclerView = view.findViewById(R.id.recycler_view);
         swipeRefreshLayout = view.findViewById(R.id.swipe_layout);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            MainFragment.this.loadRecipeData();
-        });
-        layoutManager = new LinearLayoutManager(getActivity());
-
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(layoutManager);
-
-        loadRecipeData();
 
         searchImg = view.findViewById(R.id.main_search_btn);
         emptyView = view.findViewById(R.id.empty_view);
 
         searchEt =  view.findViewById(R.id.main_search_et);
 
-        searchImg.setOnClickListener(this);
-
-
+        if (savedInstanceState != null) {
+            s = savedInstanceState.getString("title");
+            searchEt.setText(s);
+        }
 
         return view;
     }
 
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
 
         searchEt.addTextChangedListener(new TextWatcher() {
             @Override
@@ -92,7 +91,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String s = searchEt.getText().toString();
+                s = searchEt.getText().toString();
                 if (s != "") {
                     searchRecipe(s);
                 } else
@@ -104,32 +103,40 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                 searchEt.setEnabled(true);
 
             }
+
         });
 
+        loadRecipeData();
 
+        searchImg.setOnClickListener(this);
 
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            MainFragment.this.loadRecipeData();
+        });
+        layoutManager = new LinearLayoutManager(getActivity());
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(layoutManager);
 
     }
-
-
 
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("title",searchEt.getText().toString());
+        outState.putString("title",s);
     }
-
-
-
+    /*
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState != null) {
-            String a = savedInstanceState.getString("title");
-            searchEt.setText(a);
+            searchEt.setText(savedInstanceState.getString("title"));
         }
     }
+
+     */
+
 
     public void searchRecipe (String query) {
         searchList = new ArrayList<Food>();
@@ -189,7 +196,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                     Log.e("error", "recipe's error");
                 }
             }
-        }, error -> Log.e("error", "Recipe list error"));
+        }, error -> Log.e("daily point", "i've reached daily points"));
         requestQueue.add(request);
     }
 
@@ -207,4 +214,5 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                 Toast.makeText(getActivity(), "Type something...", Toast.LENGTH_LONG).show();
         }
     }
+
 }
