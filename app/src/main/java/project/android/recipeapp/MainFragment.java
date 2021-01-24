@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,26 +11,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +38,12 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     String s;
 
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -66,10 +59,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
         searchEt =  view.findViewById(R.id.main_search_et);
 
-        if (savedInstanceState != null) {
-            s = savedInstanceState.getString("title");
-            searchEt.setText(s);
-        }
+
 
         return view;
     }
@@ -79,7 +69,6 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
 
 
         searchEt.addTextChangedListener(new TextWatcher() {
@@ -92,10 +81,13 @@ public class MainFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 s = searchEt.getText().toString();
+                /*
                 if (s != "") {
                     searchRecipe(s);
                 } else
                     Toast.makeText(getActivity(), "Type something...", Toast.LENGTH_LONG).show();
+
+                 */
             }
 
             @Override
@@ -103,29 +95,52 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                 searchEt.setEnabled(true);
 
             }
-
         });
 
-        loadRecipeData();
+        //loadRecipeData();
 
         searchImg.setOnClickListener(this);
 
+        /*
         swipeRefreshLayout.setOnRefreshListener(() -> {
             MainFragment.this.loadRecipeData();
         });
         layoutManager = new LinearLayoutManager(getActivity());
 
+         */
+
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
+
+
+        if (savedInstanceState != null) {
+            s = savedInstanceState.getString("title");
+            searchEt.setText(s);
+        }
 
     }
 
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
+        //s = searchEt.getText().toString();
         outState.putString("title",s);
+        super.onSaveInstanceState(outState);
     }
+
+
+
+
+
+    @Override
+    public void onClick(View view) {
+        InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(searchEt.getWindowToken(),0);
+        if (view == searchImg) {
+            searchEt.getText().toString();
+        }
+    }
+
     /*
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -137,7 +152,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
      */
 
-
+    /*
     public void searchRecipe (String query) {
         searchList = new ArrayList<Food>();
         swipeRefreshLayout.setRefreshing(true);
@@ -201,6 +216,8 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     }
 
 
+
+
     @Override
     public void onClick(View view) {
         InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -214,5 +231,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                 Toast.makeText(getActivity(), "Type something...", Toast.LENGTH_LONG).show();
         }
     }
+
+     */
 
 }
