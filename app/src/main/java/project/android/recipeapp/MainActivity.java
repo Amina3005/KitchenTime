@@ -17,7 +17,8 @@ public class MainActivity extends AppCompatActivity {
     public MainFragment mainFragment;
     public SearchIngredient searchIngredient;
 
-    FragmentManager fm = getSupportFragmentManager();
+    Fragment fragment;
+    FragmentManager fm;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,34 +28,32 @@ public class MainActivity extends AppCompatActivity {
         mainFragment = new MainFragment();
         searchIngredient = new SearchIngredient();
 
-
-
-
-        if (savedInstanceState != null) {
-            mainFragment = (MainFragment) getSupportFragmentManager().getFragment(savedInstanceState, "title");
-            Log.e("f error", "oncreate error activity");
-            //searchIngredient = (SearchIngredient) getSupportFragmentManager().getFragment(savedInstanceState, "title");
-        }
+        fm = getSupportFragmentManager();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
         bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mainFragment).commit();
 
+
+        fragment = fm.findFragmentById(R.id.fragment_container);
+        fragment = getSupportFragmentManager().getFragment(savedInstanceState, "title");
+
+        if (savedInstanceState != null) {
+            //fm.beginTransaction().replace(R.id.fragment_container, searchIngredient);
+            //mainFragment = (MainFragment) getSupportFragmentManager().getFragment(savedInstanceState, "title");
+            Log.e("f error", "oncreate error activity");
+            //searchIngredient = (SearchIngredient) getSupportFragmentManager().getFragment(savedInstanceState, "name");
+        }
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-
-        fm.putFragment(outState,"title", mainFragment);
-        fm.putFragment(outState, "title", searchIngredient);
-
         Log.e("save activity error", "onsaveinstance error with activity");
-
+        getSupportFragmentManager().putFragment(outState,"title", searchIngredient);
+        //getSupportFragmentManager().putFragment(outState, "title", fragment);
         super.onSaveInstanceState(outState);
     }
-
-
 
 
     BottomNavigationView.OnNavigationItemSelectedListener navListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -71,10 +70,6 @@ public class MainActivity extends AppCompatActivity {
             }
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selected).commit();
             return true;
-
         }
     };
-
-
-
 }

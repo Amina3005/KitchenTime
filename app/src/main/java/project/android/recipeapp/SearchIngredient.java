@@ -42,8 +42,8 @@ public class SearchIngredient extends Fragment  {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
-
      */
+
 
     @Nullable
     @Override
@@ -111,24 +111,22 @@ public class SearchIngredient extends Fragment  {
                 getResults(sea);
             }
         });
+        */
 
-        /*
         if (savedInstanceState != null) {
             string = savedInstanceState.getString("name");
             inputEditText.setText(string);
         }
 
-         */
+
     }
 
-    /*
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString("name",string);
         super.onSaveInstanceState(outState);
     }
-
-     */
 
 
     /*
