@@ -91,7 +91,6 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //loadSuggestions(charSequence.toString());
                 string = inputEditText.getText().toString();
                 if (!string.equals("")) {
                     loadSuggestions(string);
@@ -112,6 +111,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
         if (savedInstanceState != null) {
             string = savedInstanceState.getString("name");
             inputEditText.setText(string);
+            rv.getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable("recyclerr"));
             //sea = savedInstanceState.getString("selectChip");
             //s = savedInstanceState.getString("chip");
         }
@@ -123,6 +123,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("name",string);
+        outState.putParcelable("recyclerr", rv.getLayoutManager().onSaveInstanceState());
         //outState.putString("selectChip", sea);
         //outState.putString("chip", s);
 
@@ -141,7 +142,6 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject jsonObject = response.getJSONObject(i);
                             ingredientList.add(jsonObject.getString("name"));
-                                    //(new Ingredient(jsonObject.getString("name"),jsonObject.optString("image")));
                         }
 
                         arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line,ingredientList);
@@ -204,7 +204,6 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
             Chip ch = (Chip) chipGroup.getChildAt(i);
             s = ch.getText().toString();
             res.append(" , ").append(s);
-
         }
         return res.toString();
     }

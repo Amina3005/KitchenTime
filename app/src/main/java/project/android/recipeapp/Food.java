@@ -22,4 +22,5 @@ public class Food {
     public String getName() {
         return title;
     }
+
 }

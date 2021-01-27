@@ -48,6 +48,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     public EditText searchEt;
 
     String s;
+   // public boolean isClickBtn;
 
 
     @Nullable
@@ -74,25 +75,17 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        searchEt.addTextChangedListener(watcher);
-
-        if (savedInstanceState != null) {
-            s = savedInstanceState.getString("title");
-            searchEt.setText(s);
-            searchRecipe(s);
-            //searchList = savedInstanceState.getParcelableArrayList("searchRecipe");
-        }
-        /*
         searchEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 s = searchEt.getText().toString();
 
-                if (s != "") {
+                if (!s.equals("")) {
                     searchRecipe(s);
                 } else
                     Toast.makeText(getActivity(), "Type something...", Toast.LENGTH_LONG).show();
@@ -100,9 +93,9 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
             @Override
             public void afterTextChanged(Editable editable) {
+
             }
         });
-        */
 
         loadRecipeData();
 
@@ -115,35 +108,26 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         recyclerView.setLayoutManager(layoutManager);
 
 
+        if (savedInstanceState != null) {
+            s = savedInstanceState.getString("title");
+            searchEt.setText(s);
+            recyclerView.getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable("recycler"));
+            //searchRecipe(s);
+            //searchList = savedInstanceState.getParcelableArrayList("searchRecipe");
+            //adapter.setMyFoodList(searchList);
+            //recyclerView.setAdapter(adapter);
+            //isClickBtn = savedInstanceState.getBoolean("searchR", true);
+        }
     }
-
-    TextWatcher watcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            s = searchEt.getText().toString();
-
-            if (!s.equals("")) {
-                searchRecipe(s);
-            } else
-                Toast.makeText(getActivity(), "Type something...", Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-
-        }
-    };
 
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("title",s);
-        //outState.putParcelableArrayList("searchRecipe", (ArrayList<? extends Parcelable>) searchList);
+        outState.putParcelable("recycler", recyclerView.getLayoutManager().onSaveInstanceState());
+        //outState.putParcelableArrayList("searchRecipe", (ArrayList<Food>) searchList);
+        //outState.putBoolean("searchR",isClickBtn);
     }
 
 
@@ -206,12 +190,13 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
+        //isClickBtn = true;
         InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         in.hideSoftInputFromWindow(searchEt.getWindowToken(),0);
         if (view == searchImg) {
-            if (!searchEt.getText().toString().equals("")) {
+            if (!s.equals("")) {
                 swipeRefreshLayout.setRefreshing(true);
-                searchRecipe(searchEt.getText().toString());
+                searchRecipe(s);
             }
             else
                 Toast.makeText(getActivity(), "Type something...", Toast.LENGTH_LONG).show();
