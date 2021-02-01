@@ -34,6 +34,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainFragment extends Fragment implements View.OnClickListener{
     private RecyclerView recyclerView;
@@ -48,8 +49,6 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     public EditText searchEt;
 
     String s;
-   // public boolean isClickBtn;
-
 
     @Nullable
     @Override
@@ -65,6 +64,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         emptyView = view.findViewById(R.id.empty_view);
 
         searchEt =  view.findViewById(R.id.main_search_et);
+        s = searchEt.getText().toString();
 
         return view;
     }
@@ -82,8 +82,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                s = searchEt.getText().toString();
-
+                s = charSequence.toString();
                 if (!s.equals("")) {
                     searchRecipe(s);
                 } else
@@ -95,37 +94,27 @@ public class MainFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-        if (savedInstanceState != null) {
-            s = savedInstanceState.getString("title");
-            searchEt.setText(s);
-            //recyclerView.getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable("recycler"));
-            //searchRecipe(s);
-            searchList = savedInstanceState.getParcelableArrayList("searchRecipe");
-            searchRecipe(s);
-            //adapter.setMyFoodList(searchList);
-            //recyclerView.setAdapter(adapter);
-            //isClickBtn = savedInstanceState.getBoolean("searchR", true);
-        }
-
-        loadRecipeData();
-
         searchImg.setOnClickListener(this);
-
-        swipeRefreshLayout.setOnRefreshListener(MainFragment.this::loadRecipeData);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
+        swipeRefreshLayout.setOnRefreshListener(MainFragment.this::loadRecipeData);
 
+
+        if (savedInstanceState != null) {
+            s = savedInstanceState.getString("title");
+            searchEt.setText(s);
+            searchRecipe(s);
+        } else
+            loadRecipeData();
 
     }
 
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putString("title",s);
-        //outState.putParcelable("recycler", recyclerView.getLayoutManager().onSaveInstanceState());
-        outState.putParcelableArrayList("searchRecipe", (ArrayList<Food>) searchList);
-        //outState.putBoolean("searchR",isClickBtn);
+        super.onSaveInstanceState(outState);
     }
 
 
@@ -133,7 +122,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         searchList = new ArrayList<>();
         swipeRefreshLayout.setRefreshing(true);
         String URL = " https://api.spoonacular.com/recipes/search?query=" + query + "&number=10&apiKey=0b04dac1a42848bfa0e68732c13df794";
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(requireActivity());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URL, null, response -> {
             try {
                 JSONArray searchArr = response.getJSONArray("results");
@@ -166,7 +155,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     public void loadRecipeData() {
         swipeRefreshLayout.setRefreshing(true);
         String url = "https://api.spoonacular.com/recipes/random?number=50&apiKey=0b04dac1a42848bfa0e68732c13df794";
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(requireActivity());
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
             try {
                 JSONArray recipeArray = response.getJSONArray("recipes");
@@ -178,7 +167,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                 }
                 swipeRefreshLayout.setRefreshing(false);
                 adapter.setMyFoodList(myFoodList);
-
+                recyclerView.setAdapter(adapter);
             } catch (JSONException e) {
                 Log.e("error", "recipe's error");
             }
@@ -188,8 +177,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
-        //isClickBtn = true;
-        InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager in = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         in.hideSoftInputFromWindow(searchEt.getWindowToken(),0);
         if (view == searchImg) {
             if (!s.equals("")) {
@@ -200,6 +188,5 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                 Toast.makeText(getActivity(), "Type something...", Toast.LENGTH_LONG).show();
         }
     }
-
 
 }

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">recipeapp</string>
+    <string name="choose_ingredients">Choose your ingredients</string>
+    <string name="select_ingredients">Select ingredients</string>
+    <string name="search">Search</string>
+    <string name="search_logo">searchlogo</string>
+    <string name="search_recipes">search your recipes...</string>
+    <string name="no_results">No result found</string>
 </resources>

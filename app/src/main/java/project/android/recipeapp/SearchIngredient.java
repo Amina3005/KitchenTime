@@ -51,9 +51,9 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
     ArrayAdapter<String> arrayAdapter;
 
     String string;
-    String sea; // searchBtn
-    String s; // getselectedchips
-
+    String sea;
+    //String s;
+    List<String> chipList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -71,17 +71,22 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
         rv = view.findViewById(R.id.recycler_search_results);
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        string = inputEditText.getText().toString();
+
         return view;
     }
+
+    String selected;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         inputEditText.setOnItemClickListener((adapterView, view1, i, l) -> {
-            String selected = (String) adapterView.getItemAtPosition(i);
-            onItemSelected(selected);
+            selected = (String) adapterView.getItemAtPosition(i);
+            SearchIngredient.this.onItemSelected(selected);
             inputEditText.setText("");
+            chipList.add(selected);
         });
 
         inputEditText.addTextChangedListener(new TextWatcher() {
@@ -91,7 +96,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                string = inputEditText.getText().toString();
+                string = charSequence.toString();
                 if (!string.equals("")) {
                     loadSuggestions(string);
                 }else
@@ -110,28 +115,35 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
 
         if (savedInstanceState != null) {
             string = savedInstanceState.getString("name");
+            //selected = savedInstanceState.getString("selected");
+            sea = savedInstanceState.getString("results");
             inputEditText.setText(string);
-            rv.getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable("recyclerr"));
-            //sea = savedInstanceState.getString("selectChip");
-            //s = savedInstanceState.getString("chip");
-        }
 
+            loadSuggestions(string);
+            //onItemSelected(selected);
+            getResults(sea);
+            chipList = savedInstanceState.getStringArrayList("chip");
+            for (int i = 0; i < chipList.size(); i++) {
+                String s = chipList.get(i);
+                onItemSelected(s);
+            }
+
+        }
     }
 
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putString("name",string);
-        outState.putParcelable("recyclerr", rv.getLayoutManager().onSaveInstanceState());
-        //outState.putString("selectChip", sea);
-        //outState.putString("chip", s);
-
+        //outState.putString("selected", selected);
+        outState.putString("results", sea);
+        outState.putStringArrayList("chip", (ArrayList<String>) chipList);
+        super.onSaveInstanceState(outState);
     }
 
     public void loadSuggestions(String query) {
         String url = "https://api.spoonacular.com/food/ingredients/autocomplete?query=" + query + "&number=5&apiKey=0b04dac1a42848bfa0e68732c13df794";
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(requireActivity());
         JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET,
                 url,
                 null,
@@ -157,14 +169,13 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
     }
 
     public void onItemSelected (String s) {
-        Chip chip = new Chip(getActivity());
+        Chip chip = new Chip(requireActivity());
         chip.setText(s);
         chip.setCloseIconVisible(true);
         chip.setCheckable(false);
         chip.setClickable(false);
         chip.setOnCloseIconClickListener(this);
         chipGroup.addView(chip);
-
     }
 
     @Override
@@ -176,7 +187,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
     public void getResults(String ingredients) {
         swipeRefreshLayout.setRefreshing(true);
         String url = "https://api.spoonacular.com/recipes/findByIngredients?ingredients=" + ingredients + "&number=5&apiKey=0b04dac1a42848bfa0e68732c13df794";
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(requireActivity());
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, response -> {
             try {
                 array = response;
@@ -202,7 +213,7 @@ public class SearchIngredient extends Fragment implements RecyclerItemSelectedLi
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < chipGroup.getChildCount(); i++) {
             Chip ch = (Chip) chipGroup.getChildAt(i);
-            s = ch.getText().toString();
+            String s = ch.getText().toString();
             res.append(" , ").append(s);
         }
         return res.toString();

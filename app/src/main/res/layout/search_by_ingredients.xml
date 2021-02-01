@@ -19,7 +19,7 @@
             android:id="@+id/choose_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Choose your ingredients"
+            android:text= "@string/choose_ingredients"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:fontFamily="cursive"
@@ -27,6 +27,17 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <AutoCompleteTextView
+        android:id="@+id/text_input_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_search"
+        android:layout_marginTop="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/chip_group"
+        android:hint="@string/select_ingredients"
+        android:imeOptions="flagNoExtractUi"
+        android:inputType="textAutoComplete"/>
 
 
     <com.google.android.material.chip.ChipGroup
@@ -37,25 +48,13 @@
         app:layout_constraintTop_toBottomOf="@id/text_input_et"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <AutoCompleteTextView
-        android:id="@+id/text_input_et"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_search"
-        android:layout_marginTop="36dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/chip_group"
-        android:hint="What's in your kitchen?"
-        android:imeOptions="actionSearch"
-        android:inputType="textAutoComplete"/>
-
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/ingredient_search_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:text="Search"
+        android:text="@string/search"
         android:textColor="#FFFFFF"
         android:textSize="15sp"
         android:textAlignment="center"

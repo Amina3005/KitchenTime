@@ -10,22 +10,20 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    BottomNavigationView bottomNavigationView;
     Fragment fragment;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
         bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
 
-
         fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
 
         if (fragment != null) {
             if (fragment instanceof MainFragment) {
@@ -36,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
         } else
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainFragment()).commit();
     }
-
 
     BottomNavigationView.OnNavigationItemSelectedListener navListener = item -> {
         switch (item.getItemId()) {
@@ -53,4 +50,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     };
+
+
 }
