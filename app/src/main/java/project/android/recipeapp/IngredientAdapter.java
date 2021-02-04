@@ -32,9 +32,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
             ingred_image = view.findViewById(R.id.img_ingr);
             ingredients = view.findViewById(R.id.txt_name_ingr);
             rootView = view.findViewById(R.id.root_linear);
-
         }
-
     }
 
     IngredientAdapter(Context context,List<Ingredient> data) {
@@ -52,9 +50,8 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
 
     @Override
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
-        holder.ingredients.setText(data.get(position).getNam());
-        Glide.with(holder.ingred_image.getContext()).load(data.get(position).getThumbnail()).into(holder.ingred_image);
-
+        holder.ingredients.setText(data.get(position).getName());
+        Glide.with(holder.ingred_image.getContext()).load(data.get(position).getImage()).into(holder.ingred_image);
     }
 
     @Override

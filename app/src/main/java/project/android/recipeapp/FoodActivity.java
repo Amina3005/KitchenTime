@@ -11,25 +11,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FoodActivity extends AppCompatActivity {
 
     private ImageView foodImage;
     private TextView name, time, description;
-    private List<Ingredient> ingrList = new ArrayList<Ingredient>();
+    private List<Ingredient> ingrList = new ArrayList<>();
     private RecyclerView rv;
+    Integer id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,45 +51,44 @@ public class FoodActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        final int id = intent.getIntExtra("id",0);
+        id = intent.getIntExtra("id",0);
         loadRecipe(id);
 
     }
 
+    public void loadRecipe(int RecipeId) {
+        FoodApi foodApi = RetrofitClient.getFoodApi();
+        Call<FoodDetail> foodDetailCall = foodApi.foodDetail(id);
 
-    public void loadRecipe(final int recipeId) {
-        String url = "https://api.spoonacular.com/recipes/" + recipeId + "/information?includeNutrition=false&apiKey=0b04dac1a42848bfa0e68732c13df794";
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
-            try {
-                Glide.with(foodImage.getContext()).load(response.getString("image")).into(foodImage);
-
-                name.setText(response.getString("title"));
-                time.setText(String.valueOf(response.getInt("readyInMinutes")));
-                description.setText(response.getString("instructions"));
+        foodDetailCall.enqueue(new Callback<FoodDetail>() {
+            @Override
+            public void onResponse(@NotNull Call<FoodDetail> call, @NotNull Response<FoodDetail> response) {
+                Glide.with(foodImage.getContext()).
+                        load(Objects.requireNonNull(response.body()).
+                                getImage()).into(foodImage);
+                name.setText(response.body().getTitle());
+                time.setText(String.valueOf(response.body().getTime()));
+                description.setText(response.body().getInstructions());
                 try {
-                    if (response.getString("instructions").equals("")) {
+                    if (response.body().getInstructions().equals("")) {
                         throw new Exception("No Instructions");
                     } else
-                        description.setText(Html.fromHtml(response.getString("instructions")));
+                        description.setText(Html.fromHtml(response.body().getInstructions()));
                 } catch (Exception e) {
                     Log.e("Instructionserror", e.toString());
                 }
 
-                JSONArray ingredientArray = response.getJSONArray("extendedIngredients");
-                for (int i = 0; i < ingredientArray.length(); i++) {
-                    JSONObject jsonObject = ingredientArray.getJSONObject(i);
-                    ingrList.add(new Ingredient(jsonObject.optString("originalString"), jsonObject.optString("image")));
-                }
+                ingrList = response.body().getIngrList();
                 IngredientAdapter myAdapter = new IngredientAdapter(getApplicationContext(),ingrList);
                 rv.setAdapter(myAdapter);
 
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
-        }, error -> Log.e("RequestError", error.toString()));
 
-        requestQueue.add(request);
+            @Override
+            public void onFailure(@NotNull Call<FoodDetail> call, @NotNull Throwable t) {
+                Log.e("RequestError", t.toString());
+            }
+        });
     }
 
 }

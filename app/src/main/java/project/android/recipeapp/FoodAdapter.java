@@ -25,7 +25,6 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         public ImageView imageView;
         public TextView nameView;
 
-
         FoodViewHolder(View view) {
             super(view);
             containerView = view.findViewById(R.id.recipe_row);
@@ -39,12 +38,10 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
 
     private List<Food> mData = new ArrayList<>();
 
-
     public void setMyFoodList(List<Food> myFoodList) {
         this.mData = myFoodList;
         notifyDataSetChanged();
     }
-
 
     @NonNull
     @Override
@@ -59,12 +56,12 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         Food current = mData.get(position);
         Glide.with(holder.imageView.getContext()).load(current.getImage())
                 .placeholder(R.drawable.ic_baseline_image_not_supported_24).into(holder.imageView);
-        holder.nameView.setText(current.getName());
+        holder.nameView.setText(current.getTitle());
         holder.itemView.setOnClickListener((View view) -> {
             Intent intent = new Intent(view.getContext(), FoodActivity.class);
             intent.putExtra("id", current.getId());
             intent.putExtra("Image", current.getImage());
-            intent.putExtra("name", current.getName());
+            intent.putExtra("name", current.getTitle());
             view.getContext().startActivity(intent);
         });
 

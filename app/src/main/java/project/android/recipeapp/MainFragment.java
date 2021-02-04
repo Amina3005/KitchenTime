@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,18 +22,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainFragment extends Fragment implements View.OnClickListener{
     private RecyclerView recyclerView;
@@ -43,7 +39,6 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<Food> myFoodList = new ArrayList<>();
 
-    private TextView emptyView;
     public ImageButton searchImg;
     public List<Food> searchList ;
     public EditText searchEt;
@@ -61,14 +56,12 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         swipeRefreshLayout = view.findViewById(R.id.swipe_layout);
 
         searchImg = view.findViewById(R.id.main_search_btn);
-        emptyView = view.findViewById(R.id.empty_view);
 
         searchEt =  view.findViewById(R.id.main_search_et);
         s = searchEt.getText().toString();
 
         return view;
     }
-
 
 
     @Override
@@ -100,16 +93,13 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         recyclerView.setLayoutManager(layoutManager);
         swipeRefreshLayout.setOnRefreshListener(MainFragment.this::loadRecipeData);
 
-
         if (savedInstanceState != null) {
             s = savedInstanceState.getString("title");
             searchEt.setText(s);
             searchRecipe(s);
         } else
             loadRecipeData();
-
     }
-
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -117,62 +107,49 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         super.onSaveInstanceState(outState);
     }
 
-
     public void searchRecipe (String query) {
-        searchList = new ArrayList<>();
         swipeRefreshLayout.setRefreshing(true);
-        String URL = " https://api.spoonacular.com/recipes/search?query=" + query + "&number=10&apiKey=0b04dac1a42848bfa0e68732c13df794";
-        RequestQueue requestQueue = Volley.newRequestQueue(requireActivity());
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URL, null, response -> {
-            try {
-                JSONArray searchArr = response.getJSONArray("results");
-                Log.i("the search res is", String.valueOf(searchArr));
-
-                for (int i = 0; i < searchArr.length(); i++) {
-                    JSONObject jsonObject = searchArr.getJSONObject(i);
-                    searchList.add(new Food(jsonObject.getInt("id"),
-                            "https://spoonacular.com/recipeImages/" + jsonObject.optString("image"),
-                            jsonObject.getString("title")));
+        FoodApi foodApi = RetrofitClient.getFoodApi();
+        Call<Result> resultCall = foodApi.searchList(s);
+        resultCall.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(@NotNull Call<Result> call, @NotNull Response<Result> response) {
+                searchList = Objects.requireNonNull(response.body()).getRes();
+                for (int i = 0; i < searchList.size(); i++) {
+                    String s  = searchList.get(i).getImage();
+                    searchList.get(i).setImage("https://spoonacular.com/recipeImages/" + s);
+                    response.body().setRes(searchList);
                 }
                 swipeRefreshLayout.setRefreshing(false);
-                if (searchList.isEmpty()) {
-                    recyclerView.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
-                } else {
-                    emptyView.setVisibility(View.GONE);
-                    adapter.setMyFoodList(searchList);
-                    recyclerView.setVisibility(View.VISIBLE);
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+                adapter.setMyFoodList(searchList);
+                recyclerView.setAdapter(adapter);
             }
-        }, error -> Log.e("the error is: ", error.toString()));
-        requestQueue.add(jsonObjectRequest);
-    }
 
+            @Override
+            public void onFailure(@NotNull Call<Result> call, @NotNull Throwable t) {
+                Log.e("the error is: ", t.toString());
+            }
+        });
+    }
 
     public void loadRecipeData() {
         swipeRefreshLayout.setRefreshing(true);
-        String url = "https://api.spoonacular.com/recipes/random?number=50&apiKey=0b04dac1a42848bfa0e68732c13df794";
-        RequestQueue requestQueue = Volley.newRequestQueue(requireActivity());
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
-            try {
-                JSONArray recipeArray = response.getJSONArray("recipes");
-                for (int i = 0; i < recipeArray.length(); i++) {
-                    JSONObject recipes = recipeArray.getJSONObject(i);
-                    myFoodList.add(new Food(recipes.getInt("id"), recipes.optString("image"),
-                            recipes.getString("title")));
-
-                }
+        FoodApi foodApi = RetrofitClient.getFoodApi();
+        Call<Result> call = foodApi.foodList();
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(@NotNull Call<Result> call, @NotNull Response<Result> response) {
+                myFoodList = Objects.requireNonNull(response.body()).getResult();
                 swipeRefreshLayout.setRefreshing(false);
                 adapter.setMyFoodList(myFoodList);
                 recyclerView.setAdapter(adapter);
-            } catch (JSONException e) {
-                Log.e("error", "recipe's error");
             }
-        }, error -> Log.e("daily point", "i've reached daily points"));
-        requestQueue.add(request);
+
+            @Override
+            public void onFailure(@NotNull Call<Result> call, @NotNull Throwable t) {
+                Log.e("daily point", "i've reached daily points");
+            }
+        });
     }
 
     @Override

@@ -1,29 +1,33 @@
 package project.android.recipeapp;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Ingredient {
-    private String nam;
-    private String Thumbnail;
-    private boolean selected;
 
-    Ingredient(String name, String thumbnail) {
-        this.nam = name;
-        Thumbnail = "https://spoonacular.com/cdn/ingredients_100x100/" + thumbnail;
-        selected = false;
+    @SerializedName("originalString")
+    private String name;
+    @SerializedName("image")
+    private String image;
+    @SerializedName("name")
+    private String names;
+
+    public  Ingredient(String name, String image,String names) {
+        this.name = name;
+        this.image = "https://spoonacular.com/cdn/ingredients_100x100/" + image;
+        this.names = names;
     }
 
-    public String getNam() {
-        return nam;
+    public String getName() {
+        return name;
     }
 
-    public String getThumbnail() {
-        return Thumbnail;
+    public String getImage() {
+        return "https://spoonacular.com/cdn/ingredients_100x100/" + image;
     }
 
-    public boolean isSelected() {
-        return selected;
+    public String getNames() {
+        return names;
     }
 
-    public void setSelected() {
-        selected = !selected;
-    }
+
 }

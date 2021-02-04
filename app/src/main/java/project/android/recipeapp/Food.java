@@ -1,26 +1,36 @@
 package project.android.recipeapp;
 
-public class Food {
-    private String image;
-    private String title;
-    private int id;
+import com.google.gson.annotations.SerializedName;
 
-    Food(int id, String image, String title) {
+public class Food {
+
+    @SerializedName("id")
+    private Integer id;
+    @SerializedName("title")
+    private String title;
+    @SerializedName("image")
+    private String image;
+
+    public Food (Integer id, String title, String image) {
         this.id = id;
-        this.image = image;
         this.title = title;
+        this.image =  image;
     }
 
-    public  int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public String getImage() {
-        return image;
+    public String getTitle() {
+        return title;
     }
 
-    public String getName() {
-        return title;
+    public String getImage() {
+        return  image;
+    }
+
+    public void setImage (String image) {
+        this.image = image;
     }
 
 }
