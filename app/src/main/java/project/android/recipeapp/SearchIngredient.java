@@ -27,7 +27,6 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,6 @@ public class  SearchIngredient extends Fragment implements RecyclerItemSelectedL
     private RecyclerView rv;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<Food> foodList = new ArrayList<>();
-    private JSONArray array;
 
     ArrayAdapter<String> arrayAdapter;
 
@@ -142,7 +140,7 @@ public class  SearchIngredient extends Fragment implements RecyclerItemSelectedL
 
     public void loadSuggestions(String query) {
         FoodApi foodApi = RetrofitClient.getFoodApi();
-        Call<List<Ingredient>> stringCall = foodApi.ingredientList(string);
+        Call<List<Ingredient>> stringCall = foodApi.ingredientList(query);
         stringCall.enqueue(new Callback<List<Ingredient>>() {
             @Override
             public void onResponse(@NotNull Call<List<Ingredient>> call, @NotNull Response<List<Ingredient>> response) {
@@ -182,7 +180,7 @@ public class  SearchIngredient extends Fragment implements RecyclerItemSelectedL
     public void getResults(String ingredients) {
         swipeRefreshLayout.setRefreshing(true);
         FoodApi foodApi = RetrofitClient.getFoodApi();
-        Call<List<Food>> ingredientLst = foodApi.ingredients(sea);
+        Call<List<Food>> ingredientLst = foodApi.ingredients(ingredients);
         ingredientLst.enqueue(new Callback<List<Food>>() {
             @Override
             public void onResponse(@NotNull Call<List<Food>> call, @NotNull Response<List<Food>> response) {
@@ -202,13 +200,12 @@ public class  SearchIngredient extends Fragment implements RecyclerItemSelectedL
             }
         });
 
-
     }
 
     public String getSelectedChips (ChipGroup c) {
         StringBuilder res = new StringBuilder();
-        for (int i = 0; i < chipGroup.getChildCount(); i++) {
-            Chip ch = (Chip) chipGroup.getChildAt(i);
+        for (int i = 0; i < c.getChildCount(); i++) {
+            Chip ch = (Chip) c.getChildAt(i);
             String s = ch.getText().toString();
             res.append(" , ").append(s);
         }

@@ -58,7 +58,7 @@ public class FoodActivity extends AppCompatActivity {
 
     public void loadRecipe(int RecipeId) {
         FoodApi foodApi = RetrofitClient.getFoodApi();
-        Call<FoodDetail> foodDetailCall = foodApi.foodDetail(id);
+        Call<FoodDetail> foodDetailCall = foodApi.foodDetail(RecipeId);
 
         foodDetailCall.enqueue(new Callback<FoodDetail>() {
             @Override

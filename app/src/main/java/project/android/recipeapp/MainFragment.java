@@ -110,7 +110,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     public void searchRecipe (String query) {
         swipeRefreshLayout.setRefreshing(true);
         FoodApi foodApi = RetrofitClient.getFoodApi();
-        Call<Result> resultCall = foodApi.searchList(s);
+        Call<Result> resultCall = foodApi.searchList(query);
         resultCall.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@NotNull Call<Result> call, @NotNull Response<Result> response) {
