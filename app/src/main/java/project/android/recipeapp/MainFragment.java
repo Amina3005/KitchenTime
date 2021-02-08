@@ -138,7 +138,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         Call<Result> call = foodApi.foodList();
         call.enqueue(new Callback<Result>() {
             @Override
-            public void onResponse(@NotNull Call<Result> call, @NotNull Response<Result> response) {
+            public void onResponse(@NotNull Call<Result> call,@NotNull Response<Result> response) {
                 myFoodList = Objects.requireNonNull(response.body()).getResult();
                 swipeRefreshLayout.setRefreshing(false);
                 adapter.setMyFoodList(myFoodList);
