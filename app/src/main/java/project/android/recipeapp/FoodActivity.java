@@ -3,6 +3,7 @@ package project.android.recipeapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -75,7 +76,11 @@ public class FoodActivity extends AppCompatActivity {
                     } else
                         description.setText(Html.fromHtml(response.body().getInstructions()));
                 } catch (Exception e) {
-                    Log.e("Instructionserror", e.toString());
+                    String msg = "Unfortunately, the recipe you were looking for not found, to view the original recipe click on the link below:"
+                            + "<a href=" + response.body().getSpoonacularUrl() + ">"
+                            + response.body().getSpoonacularUrl() + "</a>";
+                    description.setMovementMethod(LinkMovementMethod.getInstance());
+                    description.setText(Html.fromHtml(msg));
                 }
 
                 ingrList = response.body().getIngrList();

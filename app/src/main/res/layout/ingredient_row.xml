@@ -19,7 +19,8 @@
             android:layout_margin="10dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/contentDesOfIngr"/>
 
         <TextView
             android:id="@+id/txt_name_ingr"
@@ -29,7 +30,8 @@
             app:layout_constraintTop_toTopOf="@id/img_ingr"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/img_ingr"
-            app:layout_constraintBottom_toBottomOf="@id/img_ingr" />
+            app:layout_constraintBottom_toBottomOf="@id/img_ingr"
+            android:fontFamily="@font/hkgrotesk_medium"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

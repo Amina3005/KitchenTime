@@ -49,7 +49,7 @@
                 android:hint="@string/search_recipes"
                 android:inputType="textAutoComplete"
                 android:imeOptions="flagNoExtractUi"
-                android:textColor="@color/black"
+                android:fontFamily="@font/hkgrotesk_medium"
                 android:autofillHints=""/>
 
         </androidx.cardview.widget.CardView>

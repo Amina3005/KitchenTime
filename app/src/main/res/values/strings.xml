@@ -6,4 +6,10 @@
     <string name="search_logo">searchlogo</string>
     <string name="search_recipes">search your recipes...</string>
     <string name="no_results">No result found</string>
+    <string name="home">Home</string>
+    <string name="ingredients_bot">Ingredients</string>
+    <string name="contentDesOfPic">Pic of recipe</string>
+    <string name="contentDesOfIngr">Pic of ingredient</string>
+    <string name="contentTime">Pic of timer</string>
+    <string name="timer">mins</string>
 </resources>

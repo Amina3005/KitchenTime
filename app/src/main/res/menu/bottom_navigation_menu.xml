@@ -5,11 +5,13 @@
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
         android:enabled="true"
-        android:title="Home" />
+        android:title="@string/home"
+        android:fontFamily="@font/hkgrotesk_medium"/>
     <item
         android:id="@+id/nav_ingredients"
         android:icon="@drawable/ic_ingredient"
         android:enabled="true"
-        android:title="Ingredients"/>
+        android:title="@string/ingredients_bot"
+        android:fontFamily="@font/hkgrotesk_medium"/>
 
 </menu>
