@@ -1,3 +1,14 @@
+# Description 
+Personal project from scratch. Android application made on Java that offers different recipes using Spoonacular API and designed to allow users to search recipes based on what they have in the kitchen.
+In this project I used these techologies: 
+* Android SDK
+* Git
+* Retrofit
+Libraries: 
+* Glide for images
+* Materil Design for chips
+* OkHTTP for logging 
+* Before Retrofit used Volley
 # Screenshots
 
 ## Main page
