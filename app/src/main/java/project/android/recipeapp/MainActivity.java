@@ -7,12 +7,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import project.android.recipeapp.UI.MainFragment;
+import project.android.recipeapp.UI.SearchIngredient;
+
 
 public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
     Fragment fragment;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     };
-
 
 }

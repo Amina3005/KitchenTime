@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
 
     private static final String BASE_URL ="https://api.spoonacular.com/";
-    private static final String API_KEY = "0b04dac1a42848bfa0e68732c13df794";
+    private static final String API_KEY = "0b04dac1a42848bfa0e68732c13df794"; // don't forget to change
     public static Retrofit retrofit;
     public static FoodApi foodApi = null;
 

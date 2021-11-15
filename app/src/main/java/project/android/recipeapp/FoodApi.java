@@ -2,6 +2,10 @@ package project.android.recipeapp;
 
 import java.util.List;
 
+import project.android.recipeapp.model.Food;
+import project.android.recipeapp.model.FoodDetail;
+import project.android.recipeapp.model.Ingredient;
+import project.android.recipeapp.model.Result;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
